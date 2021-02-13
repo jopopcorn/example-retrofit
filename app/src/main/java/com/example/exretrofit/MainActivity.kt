@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.exretrofit.databinding.ActivityMainBinding
+import okhttp3.internal.notify
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,20 +23,29 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var newsAdapter: NewsAdapter
     private var newsList: ArrayList<Items> = arrayListOf()
+    private lateinit var queryMessage : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         initRetrofit()
+        initRecyclerView()
 
-        api.getSearchNews("설날").enqueue(object : Callback<Result> {
+        binding.searchBtn.setOnClickListener {
+            queryMessage = binding.searchEdit.text.toString()
+            newsList.clear()
+            search(queryMessage)
+        }
+    }
+
+    private fun search(query: String) {
+        api.getSearchNews(query).enqueue(object : Callback<Result> {
             override fun onResponse(call: Call<Result>, response: Response<Result>) {
                 if (response.code() == 200 && response.body() != null) {
                     val result : Result = response.body()!!
                     newsList.addAll(result.items)
-                    initRecyclerView()
+                    newsAdapter.notifyDataSetChanged()
                 }
             }
 
@@ -43,8 +53,8 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "${t.message}")
             }
         })
-
     }
+
 
     private fun initRecyclerView() {
         viewManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
