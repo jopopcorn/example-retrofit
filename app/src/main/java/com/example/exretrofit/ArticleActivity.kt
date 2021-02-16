@@ -24,14 +24,18 @@ class ArticleActivity : AppCompatActivity() {
         if(intent.hasExtra("url")){
             val link = intent.extras?.get("url").toString()
             binding.webView.apply {
-                webViewClient = ProgressWebView()
+                webViewClient = ProgressClient()
+                settings.apply {
+                    builtInZoomControls = true
+                    useWideViewPort = true
+                    displayZoomControls = false
+                }
                 loadUrl(link)
             }
         }
     }
 
-    inner class ProgressWebView(): WebViewClient(){
-
+    inner class ProgressClient : WebViewClient(){
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             binding.progressBar.visibility = View.VISIBLE
