@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun adapterOnClick(item: Items) {
         val intent = Intent(this, ArticleActivity()::class.java).apply {
-            putExtra("url", item.originallink)
+            putExtra("url", item.link)
         }
         startActivity(intent)
     }
